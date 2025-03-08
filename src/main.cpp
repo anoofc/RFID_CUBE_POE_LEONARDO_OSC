@@ -8,6 +8,21 @@
 #define PN532_IRQ   (2)
 #define PN532_RESET (3)  // Not connected by default on the NFC Shield
 
+#define WHITE   strip.Color(255, 255, 255)
+#define RED     strip.Color(255, 0,   0)
+#define GREEN   strip.Color(0,   255, 0)
+#define BLUE    strip.Color(0,   0,   255)
+#define YELLOW  strip.Color(255, 255, 0)
+#define CYAN    strip.Color(0,   255, 255)
+#define MAGENTA strip.Color(255, 0,   255)
+#define ORANGE  strip.Color(255, 165, 0)
+#define PURPLE  strip.Color(128, 0,   128)
+#define PINK    strip.Color(255, 192, 203)
+#define LIME    strip.Color(0,   255, 0)
+#define AQUA    strip.Color(0,   255, 255)
+#define TEAL    strip.Color(0,   128, 128)
+#define VIOLET  strip.Color(238, 130, 238)
+
 #include <Arduino.h>
 #include <OSCMessage.h>
 #include <Ethernet.h>
@@ -43,6 +58,7 @@ String tags[]         = { "", "", "", "", "", "", "", "", "", "", "", "", "", ""
 String tagID          =   "";                           // Current Tag ID
 String prevTagID      =   "";                           // Previous Tag ID
 
+uint32_t colors[] = {RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA, ORANGE, PURPLE, PINK, LIME, AQUA, TEAL, VIOLET};
 
 void neoPixel(uint32_t color) {
   for(int i=0; i<NUMPIXELS; i++) {
@@ -112,6 +128,7 @@ void processTagID(String tagID_){
     if (tagID_ == tags[i]) {
       oscSend("/composition/columns/", "i", i+1);
       Serial.println(); Serial.println(commands[i]); 
+      neoPixel(colors[i]);
       return;
     }
   }
@@ -169,6 +186,7 @@ void readNFC(){
       if (prevTagID == tags[i]) {
         Serial.println(); Serial.println(removeCommand); 
         oscSend("/composition/columns/", "i", numTags+1);
+        neoPixel(strip.Color(0, 0, 0));
         return;
       }
     }
