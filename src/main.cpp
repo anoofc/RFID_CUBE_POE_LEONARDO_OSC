@@ -157,6 +157,7 @@ void readNFC(){
     for (int i = 0; i < numTags; i++) {
       if (prevTagID == tags[i]) {
         Serial.println(); Serial.println(removeCommand); 
+        oscSend("/composition/columns/", "i", numTags+1);
         return;
       }
     }
