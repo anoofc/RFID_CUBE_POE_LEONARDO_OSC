@@ -1,10 +1,12 @@
 #define DEBUG 0
 
+#define NUMPIXELS   10
+#define PIN         12
+
 #define TIMEOUT     100
 
 #define PN532_IRQ   (2)
 #define PN532_RESET (3)  // Not connected by default on the NFC Shield
-
 
 #include <Arduino.h>
 #include <OSCMessage.h>
@@ -13,8 +15,11 @@
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_PN532.h>
+#include <Adafruit_NeoPixel.h>
 #include <EEPROM.h>
 
+// NEOPIXEL CONFIGURATION
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 // ETHERNET CONFIGURATION
 IPAddress ip(192, 168, 1, 98);                        //the Arduino's IP
@@ -28,16 +33,22 @@ EthernetUDP Udp;
 
 Adafruit_PN532 nfc(PN532_IRQ, PN532_RESET);
 
-bool success      = false;
-bool cardPresesnt = false;
-bool mode         = 0;                                // Mode of operation
-uint8_t numTags       = 0;                            // Number of tags
-String removeCommand  = "";                           // Remove command
-String commands[]     = {"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""};     // Commands for tags
-String tags[]         = {"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""};         // Tag IDs
-String tagID          = "";                           // Current Tag ID
-String prevTagID      = "";                           // Previous Tag ID
+bool success          =   false;
+bool cardPresesnt     =   false;
+bool mode             =   0;                                // Mode of operation
+uint8_t numTags       =   0;                            // Number of tags
+String removeCommand  =   "";                           // Remove command
+String commands[]     = { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""};     // Commands for tags
+String tags[]         = { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""};         // Tag IDs
+String tagID          =   "";                           // Current Tag ID
+String prevTagID      =   "";                           // Previous Tag ID
 
+
+void neoPixel(uint32_t color) {
+  for(int i=0; i<NUMPIXELS; i++) {
+    strip.setPixelColor(i, color);
+  } strip.show();
+}
 
 void oscSend(const char* address, const char* type, uint8_t column) {
   char fullAddress[50];
@@ -298,10 +309,15 @@ void eepromInit(){
   }
 }
 
+void initStrip() {
+  strip.begin();
+  strip.setBrightness(200); // Set brightness to 50%
+  strip.show(); // Initialize all pixels to 'off'
+}
 
 void setup() {
-
   Serial.begin(115200);
+  initStrip();
   eepromInit();
   nfcInit();
   Ethernet.begin(mac, ip);
