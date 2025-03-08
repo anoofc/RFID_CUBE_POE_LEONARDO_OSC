@@ -60,12 +60,32 @@ String prevTagID      =   "";                           // Previous Tag ID
 
 uint32_t colors[] = {RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA, ORANGE, PURPLE, PINK, LIME, AQUA, TEAL, VIOLET};
 
+/**
+ * @brief Sets all NeoPixels to the specified color and updates the display.
+ * 
+ * This function iterates through all the NeoPixels in the strip and sets each one to the given color.
+ * After setting the colors, it calls the show() method to update the display with the new colors.
+ * 
+ * @param color The color to set for all the NeoPixels. This is a 32-bit unsigned integer where the color
+ *              is typically represented in the format 0xRRGGBB.
+ */
 void neoPixel(uint32_t color) {
   for(int i=0; i<NUMPIXELS; i++) {
     strip.setPixelColor(i, color);
   } strip.show();
 }
 
+/**
+ * @brief Sends an OSC message to a specified address with a given type and column.
+ *
+ * This function constructs a full OSC address by appending the column number and 
+ * "/connect" to the provided address. It then creates an OSC message with this 
+ * full address and sends it via UDP to the specified IP and port.
+ *
+ * @param address The base OSC address to send the message to.
+ * @param type The type of the OSC message (not used in the current implementation).
+ * @param column The column number to append to the address.
+ */
 void oscSend(const char* address, const char* type, uint8_t column) {
   char fullAddress[50];
   snprintf(fullAddress, sizeof(fullAddress), "%s%d/connect", address, column);
@@ -192,7 +212,6 @@ void readNFC(){
     }
   }
 }
-
 
 /**
  * @brief Initializes the NFC module and checks for the PN53x board.
@@ -343,7 +362,7 @@ void setup() {
 }
 
 void loop() {
-    readNFC();
-    readSerial();
+  readNFC();
+  readSerial();
 }
 
